@@ -20,17 +20,33 @@ RUN if [ ${CHANGE_SOURCE} = true ]; then \
 RUN set -eux; \
     apt-get update; \
     apt-get upgrade -y; \
-    apt-get install -y --no-install-recommends \
-            curl \
-            libmemcached-dev \
-            libz-dev \
-            libpq-dev \
-            libjpeg-dev \
-            libpng-dev \
-            libfreetype6-dev \
-            libssl-dev \
-            libmcrypt-dev \
-            libonig-dev;
+    apt-get install -y -y --allow-downgrades --allow-remove-essential \
+        --allow-change-held-packages \
+        curl \
+        wget \
+        libmemcached-dev \
+        libz-dev \
+        libpq-dev \
+        libjpeg-dev \
+        libpng-dev \
+        libfreetype6-dev \
+        libssl-dev \
+        libmcrypt-dev \
+        libonig-dev \
+        sqlite3 \
+        git \
+        vim \
+        zsh \
+        git-core \
+        && apt-get clean
+
+###########################################################################
+# COMPOSER:
+###########################################################################
+RUN wget https://github.com/composer/composer/releases/download/1.8.6/composer.phar &&\
+    chmod u+x composer.phar &&\
+    mv composer.phar /usr/local/bin/composer && \
+    composer config -g repo.packagist composer https://mirrors.aliyun.com/composer
 
 RUN set -eux; \
     # Install the PHP pdo_mysql extention
@@ -504,17 +520,14 @@ USER root
 
 # Clean up
 RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    rm /var/log/lastlog /var/log/faillog
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Configure non-root user.
-ARG PUID=1000
-ENV PUID ${PUID}
-ARG PGID=1000
-ENV PGID ${PGID}
-
-RUN groupmod -o -g ${PGID} www-data && \
-    usermod -o -u ${PUID} -g www-data www-data
+###########################################################################
+# Oh My ZSH:
+###########################################################################
+RUN git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh \
+    && cp ~/.oh-my-zsh/templates/zshrc.zsh-template ~/.zshrc \
+    && chsh -s /bin/zsh
 
 # Adding the faketime library to the preload file needs to be done last
 # otherwise it will preload it for all commands that follow in this file
@@ -526,8 +539,12 @@ RUN if [ ${INSTALL_FAKETIME} = true ]; then \
 ARG LOCALE=POSIX
 ENV LC_ALL ${LOCALE}
 
+USER root
+
+# Clean up
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
+    rm /var/log/lastlog /var/log/faillog
+
+# Set default work directory
 WORKDIR /var/www
-
-CMD ["php-fpm"]
-
-EXPOSE 9000
