@@ -43,10 +43,14 @@ RUN set -eux; \
 ###########################################################################
 # COMPOSER:
 ###########################################################################
-RUN wget https://github.com/composer/composer/releases/download/1.8.6/composer.phar &&\
-    chmod u+x composer.phar &&\
+
+RUN curl -s http://getcomposer.org/installer | php && \
+    echo "export PATH=${PATH}:/var/www/vendor/bin" >> ~/.bashrc && \
     mv composer.phar /usr/local/bin/composer && \
     composer config -g repo.packagist composer https://mirrors.aliyun.com/composer
+
+# Source the bash
+RUN . ~/.bashrc
 
 RUN set -eux; \
     # Install the PHP pdo_mysql extention
