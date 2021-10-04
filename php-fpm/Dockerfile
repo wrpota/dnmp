@@ -30,6 +30,8 @@ RUN set -eux; \
             libfreetype6-dev \
             libssl-dev \
             libmcrypt-dev \
+            libwebp-dev \
+            libonig-dev; \
             libonig-dev;
 
 RUN set -eux; \
