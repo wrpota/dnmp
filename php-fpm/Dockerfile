@@ -31,8 +31,7 @@ RUN set -eux; \
             libssl-dev \
             libmcrypt-dev \
             libwebp-dev \
-            libonig-dev; \
-            libonig-dev;
+            libonig-dev; 
 
 RUN set -eux; \
     # Install the PHP pdo_mysql extention
