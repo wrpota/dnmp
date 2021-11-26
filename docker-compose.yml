@@ -46,6 +46,7 @@ services:
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
       - ./workspace/supervisord.d:/etc/supervisord.d
+      - ./logs/supervisor:/var/logs/supervisor
     restart: always
     expose:
       - "9000"
