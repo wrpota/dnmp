@@ -38,6 +38,7 @@ RUN set -eux; \
         vim \
         zsh \
         git-core \
+        supervisor \
         && apt-get clean
 
 ###########################################################################
@@ -500,6 +501,20 @@ RUN if [ ${DOWNGRADE_OPENSSL_TLS_AND_SECLEVEL} = true ]; then \
     && \
     sed -i 's,^\(CipherString[ ]*=\).*,\1'DEFAULT@SECLEVEL=1',g' /etc/ssl/openssl.cnf\
 ;fi
+
+#
+#--------------------------------------------------------------------------
+# Optional Supervisord Configuration
+#--------------------------------------------------------------------------
+#
+# Modify the ./supervisor.conf file to match your App's requirements.
+# Make sure you rebuild your container with every change.
+#
+
+COPY supervisord.conf /etc/supervisord.conf
+
+ENTRYPOINT ["/usr/bin/supervisord", "-n", "-c",  "/etc/supervisord.conf"]
+
 
 ###########################################################################
 # Check PHP version:
