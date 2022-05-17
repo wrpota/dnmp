@@ -99,6 +99,7 @@ services:
       - TZ=${WORKSPACE_TIMEZONE}
     volumes:
       - ${APP_CODE_PATH_HOST}:${APP_CODE_PATH_CONTAINER}${APP_CODE_CONTAINER_FLAG}
+      - ${PHP_FPM_LOG_PATH}:/var/log/php-fpm
     restart: always
     expose:
       - "9000"
